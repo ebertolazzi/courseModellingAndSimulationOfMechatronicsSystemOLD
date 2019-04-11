@@ -93,20 +93,38 @@ classdef ODEbaseSolverRKimplicit < ODEbaseSolver
     %
     %  Find x that solve residual( x, x0 ) = 0 by using Newton method
     %
-    function K = solveStepByNewton( self )
-      ns  = length( self.c );
-      K   = repmat( self.odeClass.f( self.t0, self.x0 ), ns, 1);
-      err = 0;
-      for iter=1:50
-        R   = self.stepResidual( K );
-        JR  = self.stepResidualJacobian( K );
-        H   = JR\R;
-        K   = K - H;
-        err = norm(H,Inf);
-        if err < self.tol; break; end
+    function [F,J] = for_fsolve( self, x )
+      F = self.stepResidual( x );
+      if nargout > 1
+        J = self.stepResidualJacobian( x );
       end
-      if err > self.tol
-        error( 'solveStepByNewton do not converge err = %g', err );
+    end
+    %
+    function K = solveStepByNewton( self )
+      ns = length( self.c );
+      K  = repmat( self.odeClass.f( self.t0, self.x0 ), ns, 1);
+      if false
+        options = optimoptions('lsqnonlin',...
+          'Display','iter', ...
+          'CheckGradients', false, ...
+          'SpecifyObjectiveGradient', true, ...
+          'Algorithm','levenberg-marquardt' ...
+        );
+        F = @(x) self.for_fsolve( x );
+        K = lsqnonlin( F, K, [], [], options ); 
+      else
+        err = 0;
+        for iter=1:50
+          R   = self.stepResidual( K );
+          JR  = self.stepResidualJacobian( K );
+          H   = JR\R;
+          K   = K - H;
+          err = norm(H,Inf);
+          if err < self.tol; break; end
+        end
+        if err > self.tol
+          error( 'solveStepByNewton do not converge err = %g', err );
+        end
       end
     end
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
