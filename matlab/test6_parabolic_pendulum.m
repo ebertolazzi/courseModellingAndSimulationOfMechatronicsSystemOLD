@@ -15,11 +15,12 @@ addpath('odes');
 addpath('daes');
 
 %e1   = ExplicitEuler();
-e1   = LobattoIIIC();
+%e1   = LobattoIIIC();
+e1  = GaussLegendre4();
 ode1 = ParabolicPendulum();
 e1.setODE(ode1);
 
-tt  = 0:0.01:1;
+tt  = 0:0.025:500;
 % setup initial condition
 x0      = 0;
 y0      = 1;
