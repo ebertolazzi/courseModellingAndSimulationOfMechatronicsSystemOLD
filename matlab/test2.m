@@ -13,6 +13,8 @@ addpath('explicit');
 addpath('implicit');
 addpath('odes');
 
+close all;
+
 ee   = Collatz();
 ei   = Heun();
 ode1 = ODE1();

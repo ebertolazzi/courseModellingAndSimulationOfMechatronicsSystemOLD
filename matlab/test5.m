@@ -13,6 +13,8 @@ addpath('explicit');
 addpath('implicit');
 addpath('odes');
 
+close all;
+
 e1   = RadauIA();
 e2   = RadauIIA();
 e3   = LobattoIIIB();
@@ -26,11 +28,15 @@ e3.setODE(ode1);
 e4.setODE(ode1);
 %e5.setODE(ode1);
 
-tt  = 0:0.025:100;
-ini = [0;1]; 
+tt  = 0:0.01:100;
+ini = [0;1];
+disp('advance RadauIA');
 xy1 = e1.advance( tt, ini );
+disp('advance RadauIIA');
 xy2 = e2.advance( tt, ini );
+disp('advance LobattoIIIB');
 xy3 = e3.advance( tt, ini );
+disp('advance LobattoIIIC');
 xy4 = e4.advance( tt, ini );
 %xy5 = e5.advance( tt, ini );
 

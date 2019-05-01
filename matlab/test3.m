@@ -13,6 +13,8 @@ addpath('explicit');
 addpath('implicit');
 addpath('odes');
 
+close all;
+
 ee   = Collatz();
 ei   = CrankNicolson();
 ode1 = ODE1();
@@ -21,7 +23,7 @@ ee.setODE(ode1);
 ei.setODE(ode1);
 
 tt  = 0:pi/10:2*pi;
-ini = [0;1]; 
+ini = [0;1];
 xy1 = ee.advance( tt, ini );
 xy2 = ei.advance( tt, ini );
 

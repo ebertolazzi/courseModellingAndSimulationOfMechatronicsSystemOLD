@@ -17,23 +17,25 @@ addpath('../matlab/implicit');
 % solver object instance
 %solver = ExplicitEuler();
 %solver = ImplicitEuler();
-solver = ImplicitEuler();
+solver = Heun();
 
 % initialize to variable ode with the Pendulum
 % ODE object instance
-ell  = 2;
-mass = 10;
-ode = Pendulum( ell, mass, 9.8 );
+ell = 2;
+g   = 9.8;
+ode = Pendulum( ell, g );
 
 %
 % tell  solver that the ODE to be used is the Pendulum ode
 solver.setODE(ode);
 
 % set the time steps 
-tt  = 0:0.01:10;
+tt  = 0:0.01:20;
 
 % now choose the initial condition (not consistent)
-ini = [ ell, 0, 0, -1, mass/4  ]; 
+ini = [ ell, 0, 0, -1, 0 ];
+%ini = ode.project( 0, ini ) ; 
+ini = ode.project2( 0, ini ) ; 
 
 xy = solver.advance( tt, ini );
 

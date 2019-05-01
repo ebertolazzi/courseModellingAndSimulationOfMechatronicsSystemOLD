@@ -13,6 +13,8 @@ addpath('explicit');
 addpath('implicit');
 addpath('odes');
 
+close all;
+
 e1   = ExplicitEuler();
 e2   = ImplicitEuler();
 e3   = Collatz();

@@ -13,6 +13,8 @@ addpath('explicit');
 addpath('implicit');
 addpath('odes');
 
+close all;
+
 ee   = ExplicitEuler();
 ei   = ImplicitEuler();
 ode1 = ODE1();

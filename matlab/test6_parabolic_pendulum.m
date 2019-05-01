@@ -14,9 +14,11 @@ addpath('implicit');
 addpath('odes');
 addpath('daes');
 
+close all;
+
 %e1   = ExplicitEuler();
 %e1   = LobattoIIIC();
-e1  = GaussLegendre4();
+e1   = GaussLegendre4();
 ode1 = ParabolicPendulum();
 e1.setODE(ode1);
 

@@ -11,7 +11,7 @@
 %
 classdef ODEbaseClass < handle
   properties (SetAccess = protected, Hidden = true)
-    odeName;
+    name;
   end
 
   methods (Abstract)
@@ -42,8 +42,8 @@ classdef ODEbaseClass < handle
   end
 
   methods
-    function self = ODEbaseClass( odeName )
-      self.odeName = odeName;
+    function self = ODEbaseClass( name )
+      self.name = name;
     end
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     function delete( self )
