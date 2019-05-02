@@ -163,14 +163,14 @@ classdef Pendulum < ODEbaseClass
     end
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     function [f,g] = Qtarget( self, X, X0 )
-      f = 0.5*dot(X-X0,X-X0);
+      f = 0.5*dot(X(:)-X0(:),X(:)-X0(:));
       if nargout > 1
-        g = X-X0;
+        g = X(:)-X0(:);
       end
     end
     % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     function Zproj = project( self, t, Z )
-      Zproj = Z;
+      Zproj = Z(:);
       x0    = Z(1);
       y0    = Z(2);
       u0    = Z(3);
@@ -183,8 +183,8 @@ classdef Pendulum < ODEbaseClass
         'Display','off' ...
       );
       % project position (x,y)
-      fun     = @(P) self.Qtarget(P,[x0,y0]);
-      nonlcon = @(P) self.Pconst( t, [P,Z(3:5)] );
+      fun     = @(P) self.Qtarget(P,[x0;y0]);
+      nonlcon = @(P) self.Pconst( t, [P(:);Zproj(3:5)] );
       res     = fmincon(...
         fun, Z(1:2), [], [], [], [], [-Inf;-Inf], [Inf;Inf], ...
         nonlcon, options ...
@@ -192,8 +192,8 @@ classdef Pendulum < ODEbaseClass
       Zproj(1) = res(1);
       Zproj(2) = res(2);
       % project velocity (u,v)
-      fun     = @(V) self.Qtarget(V,[u0,v0]);
-      nonlcon = @(V) self.Vconst( t, [Zproj(1:2),V(1:2),mu0] );
+      fun     = @(V) self.Qtarget(V,[u0;v0]);
+      nonlcon = @(V) self.Vconst( t, [Zproj(1:2);V(:);mu0] );
       res     = fmincon(...
         fun, Z(3:4), [], [], [], [], [-Inf;-Inf], [Inf;Inf], ...
         nonlcon, options ...

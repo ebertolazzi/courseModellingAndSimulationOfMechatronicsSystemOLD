@@ -1,0 +1,57 @@
+
+COURSE*of;
+# 
+# DAE library
+# find the index using LU
+# 
+
+with(LinearAlgebra):
+# Index Reduxtion using Library
+KtLtbuild := proc( E )
+  local P, L, U, r, LtKt, Lt, Kt;
+  P,L,U := LUDecomposition( E );
+  # the rank can be deduced from LU decomposition
+  # next version optimize this step
+  r := Rank( E );
+  # compute L^(-1).P
+  LtKt := LinearSolve(L,P);
+  Lt   := LtKt[1..r,1..-1];
+  Kt   := LtKt[r+1..-1,1..-1];
+  return Kt, Lt;
+end proc;
+ReduceBy1TheIndex := proc( EQS, Dvars )
+  local E, G, Kt, Lt, DPART, ALG, DALG;
+  E, G   := GenerateMatrix(EQS,Dvars);
+  Kt, Lt := KtLtbuild( E );
+  # Separate Algebraic and Differential part
+  DPART := simplify(Lt.(E.<Dvars>-G));
+  ALG   := simplify(Kt.(E.<Dvars>-G));
+  DALG  := diff(ALG,t);
+  # Build the modified DAE, by subtuting the algebraic equation(s)
+  # with the derivative of the algebraic equation(s)
+  return <DPART,DALG>, ALG;
+end proc;
+# Code Generation
+F_TO_MATLAB := proc( F, name )
+  local i, LST;
+  LST := []:
+  for i from 1 to nops(F) do
+    if evalb(F[i] <> 0) then
+      LST := [op(LST), convert(name||_||i,symbol) = simplify(F[i]) ];
+    end;
+  end;
+  CodeGeneration[Matlab](LST,optimize=true);
+end proc;
+JF_TO_MATLAB := proc( JF, name )
+  local i, j, LST;
+  LST := []:
+  for i from 1 to LinearAlgebra[RowDimension](JF) do
+    for j from 1 to LinearAlgebra[ColumnDimension](JF) do
+      if evalb(JF[i,j] <> 0) then
+        LST := [op(LST), convert(name||_||i||_||j,symbol) = simplify(JF[i,j]) ];
+      end;
+    end;
+  end;
+  CodeGeneration[Matlab](LST,optimize=true);
+end proc;
+
