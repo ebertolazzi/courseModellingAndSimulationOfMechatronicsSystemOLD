@@ -93,7 +93,8 @@ classdef ODEbaseSolverRKimplicit < ODEbaseSolver
     %
     function K = solveStepByNewton( self )
       ns = length( self.c );
-      K  = repmat( self.dt * self.odeClass.f( self.t0, self.x0 ), ns, 1);
+      K0 = self.dt * self.odeClass.f( self.t0, self.x0 );
+      K  = repmat( K0(:), ns, 1);
       fun = @(K) self.stepResidual( K );
       jac = @(K) self.stepResidualJacobian( K );
       [K,ierr] = NewtonSolver( fun, jac, K );

@@ -30,14 +30,14 @@ function [x,ierr] = NewtonSolver( fun, jac, X0, varargin )
 
   for niter=1:maxiter
     % direction search
-    F = feval( fun, x );
-    J = feval( jac, x );
+    F  = feval( fun, x );
+    JF = feval( jac, x );
     % check if finished
     if norm(F,inf)<tol
       return;
     end
     % evaluate direction search
-    d  = J\F;
+    d  = JF\F;
     nd = norm(d,2);
     % do line search
     ok    = false;
@@ -45,7 +45,7 @@ function [x,ierr] = NewtonSolver( fun, jac, X0, varargin )
     for subiter=1:50
       x1 = x - alpha * d;
       if all(isfinite(x1))
-        d1 = J\feval( fun, x1 );
+        d1 = JF\feval( fun, x1 );
         if norm(d1,2) < sqrt(1-alpha/2)*nd
           ok = true;
           break;
