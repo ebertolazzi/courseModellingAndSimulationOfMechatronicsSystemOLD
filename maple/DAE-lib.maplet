@@ -2,7 +2,7 @@
 COURSE*of;
 # 
 # DAE library
-# find the index using LU
+# Of the Course Modelling and Simulation Mechatronics System
 # 
 
 with(LinearAlgebra):
@@ -14,7 +14,7 @@ KtLtbuild := proc( E )
   # next version optimize this step
   r := Rank( E );
   # compute L^(-1).P
-  LtKt := LinearSolve(L,P);
+  LtKt := LinearSolve(L,Transpose(P));
   Lt   := LtKt[1..r,1..-1];
   Kt   := LtKt[r+1..-1,1..-1];
   return Kt, Lt;
@@ -40,7 +40,7 @@ F_TO_MATLAB := proc( F, name )
       LST := [op(LST), convert(name||_||i,symbol) = simplify(F[i]) ];
     end;
   end;
-  CodeGeneration[Matlab](LST,optimize=true);
+  CodeGeneration[Matlab](LST,optimize=true);  for i from 1 to nops(F) do    printf("%s(%d) = %s_%d;\n",name,i,name,i);  end;
 end proc;
 JF_TO_MATLAB := proc( JF, name )
   local i, j, LST;
@@ -53,5 +53,12 @@ JF_TO_MATLAB := proc( JF, name )
     end;
   end;
   CodeGeneration[Matlab](LST,optimize=true);
+  for i from 1 to LinearAlgebra[RowDimension](JF) do
+    for j from 1 to LinearAlgebra[ColumnDimension](JF) do
+      if evalb(JF[i,j] <> 0) then
+        printf("%s(%d,%d) = %s_%d_%d;\n",name,i,j,name,i,j);
+      end;
+    end;
+  end;
 end proc;
 

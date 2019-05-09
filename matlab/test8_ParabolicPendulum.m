@@ -23,25 +23,41 @@ close all;
 
 solver     = Heun();
 solver_DAE = Heun_DAE();
-dae        = Akzo();
+dae        = ParabolicPendulum();
 
 solver.setODE(dae);
 solver_DAE.setODE(dae);
 
-tt  = 0:0.05:200;
+tt  = 0:0.025:25;
 % setup initial condition
-y1  = 0.444;
-y4  = 0.007;
-Ks  = 115.83;
-ini = [ y1, 0.00123, 0, y4, 0, Ks*y1*y4 ];
-
+x0      = 0;
+y0      = 1;
+u0      = 1;
+v0      = 0;
+lambda0 = (1/4)*9.81-3/2;
+ini = [x0;y0;u0;v0;lambda0];
 fprintf('avance with ODE and possible drift\n');
 sol= solver.advance( tt, ini );
 fprintf('avance with ODE+PROJECTION\n');
 sol_DAE = solver_DAE.advance_DAE( tt, ini );
 fprintf('done\n');
 
-for kk=1:6
-  subplot(3,2,kk);
-  plot( tt, sol(kk,:), tt, sol_DAE(kk,:), 'Linewidth', 2 );
-end
+subplot(2,1,1);
+x = sol(1,:);
+y = sol(2,:);
+plot( x, y, '-o', 'MarkerSize', 6, 'Linewidth', 2 );
+hold on
+axis equal
+xx = -1:0.01:1;
+yy = xx.^2+sqrt(1-xx.^2);
+plot( xx, yy, '-r', 'Linewidth', 2 );
+title('ODE+no stabilization');
+
+subplot(2,1,2);
+x = sol_DAE(1,:);
+y = sol_DAE(2,:);
+plot( x, y, '-o', 'MarkerSize', 6, 'Linewidth', 2 );
+hold on
+axis equal
+plot( xx, yy, '-r', 'Linewidth', 2 );
+title('ODE+projection');
